@@ -16,7 +16,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
@@ -30,13 +30,6 @@ jobs:
             sleep 2
           done
           echo "MongoDB is ready!"
-
-      - name: Debug directory structure
-        run: |
-          pwd
-          ls
-          ls backend || true
-          find backend -type d
 
       - name: Install dependencies
         working-directory: backend/Services/AuthServices
