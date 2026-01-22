@@ -5,7 +5,7 @@ on:
     branches: [ main ]
 
 jobs:
-  mongo-init:
+  backend-test:
     runs-on: ubuntu-latest
 
     services:
@@ -23,38 +23,27 @@ jobs:
         with:
           node-version: '18'
 
-      - name: waiting for MongoDB for ready
+      - name: Waiting for MongoDB to be ready
         run: |
           until nc -z localhost 27017; do
-            echo "Waiting for MongoDB to be ready..."
+            echo "Waiting for MongoDB..."
             sleep 2
           done
           echo "MongoDB is ready!"
 
-      - name: Seed MongoDB
-        working-directory: ./backend/Services/AuthServices
-        run: |
-          npm install
-          node ./Src/seed.js
-
-  test:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: checkout repository
-        uses: actions/checkout@v5
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-
       - name: Install dependencies
-        run: |
-          cd backend/Services/AuthServices
-          npm install
+        working-directory: backend/Services/AuthServices
+        run: npm install
+
+      - name: Seed MongoDB
+        working-directory: backend/Services/AuthServices
+        env:
+          MONGO_URI: mongodb://localhost:27017/auth-service-test
+        run: node Src/seed.js
 
       - name: Run tests
-        run: |
-          cd backend/Services/AuthServices
-          npm test
+        working-directory: backend/Services/AuthServices
+        env:
+          MONGO_URI: mongodb://localhost:27017/auth-service-test
+          NODE_ENV: test
+        run: npm test
