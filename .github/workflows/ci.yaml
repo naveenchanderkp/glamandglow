@@ -21,7 +21,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: "18"
 
       - name: Waiting for MongoDB to be ready
         run: |
@@ -30,6 +30,13 @@ jobs:
             sleep 2
           done
           echo "MongoDB is ready!"
+
+      - name: Debug directory structure
+        run: |
+          pwd
+          ls
+          ls backend || true
+          find backend -type d
 
       - name: Install dependencies
         working-directory: backend/Services/AuthServices
