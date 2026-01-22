@@ -3,48 +3,57 @@ name: MERN CI
 on:
   push:
     branches: [ main ]
-  pull_request:
 
 jobs:
-  backend-test:
+  mongo-init:
     runs-on: ubuntu-latest
 
     services:
-      mongo:
-        image: mongo:6
-        ports:
-          - 27017:27017
-        options: >-
-          --health-cmd="mongosh --eval 'db.runCommand({ ping: 1 })'"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
+      image: mongo
+      ports:
+        - "27017:27017"
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
         with:
-          node-version: 18
-          cache: npm
-          cache-dependency-path: |
-            backend/**/package-lock.json
+          node-version: '18'
 
-      - name: Install dependencies
-        working-directory: backend/Services/AuthServices
-        run: npm install
+      - name: waiting for MongoDB for ready
+        run: |
+          until nc -z localhost 27017; do
+            echo "Waiting for MongoDB to be ready..."
+            sleep 2
+          done
+          echo "MongoDB is ready!"
 
       - name: Seed MongoDB
-        working-directory: backend/Services/AuthServices
-        env:
-          MONGO_URI: mongodb://localhost:27017/auth-service-test
-        run: node Src/seed.js
+        working-directory: ./backend/Services/AuthServices
+        run: |
+          npm install
+          node ./Src/seed.js
+
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout repository
+        uses: actions/checkout@v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: |
+          cd backend/Services/AuthServices
+          npm install
 
       - name: Run tests
-        working-directory: backend/Services/AuthServices
-        env:
-          MONGO_URI: mongodb://localhost:27017/auth-service-test
-          NODE_ENV: test
-        run: npm test
+        run: |
+          cd backend/Services/AuthServices
+          npm test
