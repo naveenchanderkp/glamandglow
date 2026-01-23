@@ -36,17 +36,17 @@ jobs:
           echo "MongoDB is ready!"
 
       - name: Install dependencies
-        working-directory: backend\Services\AuthServices
+        working-directory: backend/Services/AuthServices
         run: npm install
 
       - name: Seed MongoDB
-        working-directory: backend\Services\AuthServices
+        working-directory: backend/Services/AuthServices
         env:
           MONGO_URI: mongodb://localhost:27017/auth-service-test
         run: node Src/seed.js
 
       - name: Run tests
-        working-directory: backend\Services\AuthServices
+        working-directory: backend/Services/AuthServices
         env:
           MONGO_URI: mongodb://localhost:27017/auth-service-test
           NODE_ENV: test
