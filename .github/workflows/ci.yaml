@@ -20,7 +20,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
       - name: Debug Directory Structure
         run: ls -R
       - name: Set up Node.js
@@ -37,17 +37,17 @@ jobs:
           echo "MongoDB is ready!"
 
       - name: Install dependencies
-        working-directory: glamglows/glamglow/backend
+        working-directory: backend/Services/AuthServices
         run: npm install
 
       - name: Seed MongoDB
-        working-directory: glamglows/glamglow/backend
+        working-directory: backend/Services/AuthServices
         env:
           MONGO_URI: mongodb://localhost:27017/auth-service-test
-        run: node Src/seed.js
+        run: node Src/seedTasksData.js
 
       - name: Run tests
-        working-directory: glamglows/glamglow/backend
+        working-directory: backend/Services/AuthServices
         env:
           MONGO_URI: mongodb://localhost:27017/auth-service-test
           NODE_ENV: test
