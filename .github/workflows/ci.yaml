@@ -24,8 +24,21 @@ jobs:
       - name: Debug Directory Structure
         run: |
           ls -R
-          ls -la backend || echo "backend not found"
-          ls -la backend/Services || echo "backend/Services not found"
+          echo "Listing all package.json files:"
+          find . -name "package.json" -not -path "*/node_modules/*"
+
+      - name: Locate Auth Service
+        run: |
+          # Find the directory containing the package.json with name "auth-service"
+          AUTH_SERVICE_DIR=$(find . -type f -name "package.json" -not -path "*/node_modules/*" -exec grep -l '"name": "auth-service"' {} + | head -n 1 | xargs dirname)
+          
+          if [ -z "$AUTH_SERVICE_DIR" ]; then
+            echo "Error: Could not find auth-service directory!"
+            exit 1
+          fi
+          
+          echo "Found Auth Service at: $AUTH_SERVICE_DIR"
+          echo "AUTH_SERVICE_DIR=$AUTH_SERVICE_DIR" >> $GITHUB_ENV
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
@@ -42,20 +55,28 @@ jobs:
 
       - name: Install dependencies
         run: |
-          cd backend/Services/AuthServices
+          cd ${{ env.AUTH_SERVICE_DIR }}
           npm install
 
       - name: Seed MongoDB
         env:
           MONGO_URI: mongodb://localhost:27017/auth-service-test
         run: |
-          cd backend/Services/AuthServices
-          node Src/seedTasksData.js
+          cd ${{ env.AUTH_SERVICE_DIR }}
+          # Dynamically find seed script to handle casing issues
+          SEED_SCRIPT=$(find . -name seedTasksData.js | head -n 1)
+          if [ -z "$SEED_SCRIPT" ]; then
+             echo "Error: Could not find seedTasksData.js"
+             # Fallback to hardcoded if find fails
+             node Src/seedTasksData.js
+          else
+             node "$SEED_SCRIPT"
+          fi
 
       - name: Run tests
         env:
           MONGO_URI: mongodb://localhost:27017/auth-service-test
           NODE_ENV: test
         run: |
-          cd backend/Services/AuthServices
+          cd ${{ env.AUTH_SERVICE_DIR }}
           npm test
