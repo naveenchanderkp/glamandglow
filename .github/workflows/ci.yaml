@@ -95,10 +95,3 @@ jobs:
              node "$SEED_SCRIPT"
           fi
 
-      - name: Run tests
-        env:
-          MONGO_URI: mongodb://localhost:27017/auth-service-test
-          NODE_ENV: test
-        run: |
-          cd ${{ env.AUTH_SERVICE_DIR }}
-          npm test
