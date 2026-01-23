@@ -21,7 +21,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
-
+      - name: Debug Directory Structure
+        run: ls -R
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
@@ -36,11 +37,8 @@ jobs:
           echo "MongoDB is ready!"
 
       - name: Install dependencies
-        working-directory: backend/Services/AuthServices
+        wworking-directory: ${{ github.workspace }}/backend/Services/AuthServices
         run: npm install
-        
-      - name: Debug Directory Structure
-        run: find . -maxdepth 4 -not -path '*/.*'
 
       - name: Seed MongoDB
         working-directory: backend/Services/AuthServices
