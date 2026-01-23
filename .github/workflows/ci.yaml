@@ -29,14 +29,25 @@ jobs:
 
       - name: Locate Auth Service
         run: |
-          # Find the directory containing the package.json with name "auth-service"
-          AUTH_SERVICE_DIR=$(find . -type f -name "package.json" -not -path "*/node_modules/*" -exec grep -l '"name": "auth-service"' {} + | head -n 1 | xargs dirname)
+          echo "Debugging: Searching for package.json files..."
+          find . -name "package.json" -not -path "*/node_modules/*"
           
-          if [ -z "$AUTH_SERVICE_DIR" ]; then
+          # Try to find the specific file first
+          TARGET_FILE=$(find . -name "package.json" -not -path "*/node_modules/*" -print0 | xargs -0 grep -l '"name": "auth-service"' | head -n 1)
+          
+          # Fallback mechanism if strict match fails
+          if [ -z "$TARGET_FILE" ]; then
+             echo "Strict match failed. Trying to find by directory name 'AuthServices'..."
+             TARGET_FILE=$(find . -type f -path "*/AuthServices/package.json" -not -path "*/node_modules/*" | head -n 1)
+          fi
+
+          # Final check
+          if [ -z "$TARGET_FILE" ]; then
             echo "Error: Could not find auth-service directory!"
             exit 1
           fi
           
+          AUTH_SERVICE_DIR=$(dirname "$TARGET_FILE")
           echo "Found Auth Service at: $AUTH_SERVICE_DIR"
           echo "AUTH_SERVICE_DIR=$AUTH_SERVICE_DIR" >> $GITHUB_ENV
 
