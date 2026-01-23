@@ -24,7 +24,18 @@ jobs:
       - name: Debug Directory Structure
         run: |
           ls -R
-          echo "Listing all package.json files:"
+          echo "=== ROOT DIRECTORY CONTENTS ==="
+          ls -la
+          echo "=== BACKEND DIRECTORY CHECK ==="
+          if [ -d "backend" ]; then
+            echo "backend directory exists"
+            ls -R backend
+          else
+             echo "backend directory DOES NOT EXIST (case sensitive check)"
+             find . -maxdepth 2 -type d -name "*ackend*"
+          fi
+          
+          echo "Debugging: Searching for package.json files..."
           find . -name "package.json" -not -path "*/node_modules/*"
 
       - name: Locate Auth Service
