@@ -38,6 +38,9 @@ jobs:
       - name: Install dependencies
         working-directory: backend/Services/AuthServices
         run: npm install
+        
+      - name: Debug Directory Structure
+        run: find . -maxdepth 4 -not -path '*/.*'
 
       - name: Seed MongoDB
         working-directory: backend/Services/AuthServices
