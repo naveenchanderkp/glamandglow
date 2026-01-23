@@ -1,8 +1,8 @@
 const request = require('supertest')
-// import app from "../Services/AuthServices/Src/app.js";
-// import server from "../Services/AuthServices/Src/server.js";
-const app = require('../Services/AuthServices/Src/app');
-const server = require('../Services/AuthServices/Src/server');
+// import app from "../Src/app.js";
+// import server from "../Src/server.js";
+const app = require('../Src/app');
+const server = require('../Src/server');
 const mongoose = require('mongoose');
 
 describe('GET auth/user',()=>{
