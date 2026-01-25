@@ -1,4 +1,4 @@
-version: "3"
+version: "3.8"
 
 services:
   backend:
@@ -6,6 +6,10 @@ services:
       context: ./backend/Services/AuthServices
     ports:
       - "5000:5000"
+    env_file:
+      - ./backend/Services/AuthServices/.env
+    depends_on:
+      - mongo
     networks:
       - mern-network
 
@@ -14,6 +18,8 @@ services:
       context: ./frontend
     ports:
       - "8000:80"
+    depends_on:
+      - backend
     networks:
       - mern-network
 
