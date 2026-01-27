@@ -1,16 +1,10 @@
-// import { useState } from 'react'
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import routes from "./routes/routes";
 
-import './App.css'
+const router = createBrowserRouter(routes);
 
 function App() {
-  // const [count, setCount] = useState(0)
-
-  return (
-    <>
-        <p>this is first check new changes here for checkkey</p>
-     
-    </>
-  )
+  return <RouterProvider router={router} />;
 }
 
-export default App
+export default App;
